@@ -41,9 +41,9 @@ USER root
 ## Create user and group
 RUN if [ -z "$(getent group {{groupid}})" ]; then hash groupadd &> /dev/null && groupadd {{groupid}} || exit -1 ; fi \
  && if [ -z "$(getent passwd {{userid}})" ]; then hash useradd &> /dev/null && useradd -g {{groupid}} {{userid}} || exit -1; fi \
- && mkdir -p /{{mii_resource_root}} \
- && chown {{userid}}:{{groupid}} {{mii_resource_root}} \
- && chmod 775 /{{mii_resource_root}}
+ && mkdir -p /{{mii_mount_path}} \
+ && chown {{userid}}:{{groupid}} {{mii_mount_path}} \
+ && chmod 775 /{{mii_mount_path}}
 
 USER {{userid}}
 
@@ -88,7 +88,7 @@ FROM os_update as final_build
 
 ENV WDT_HOME={{{wdt_home}}}/weblogic-deploy
 ENV WDT_MODEL_HOME={{{wdt_model_home}}}
-ENV WDT_MII_RESOURCE_ROOT={{{mii_resource_root}}}
+ENV WDT_MII_RESOURCE_ROOT={{{mii_mount_path}}}
 
 LABEL com.oracle.weblogic.imagetool.buildid="{{buildId}}"
 
@@ -98,7 +98,9 @@ COPY --from=wdt_build --chown={{userid}}:{{groupid}} {{wdt_home}} {{wdt_home}}/
 {{#isWdtModelHomeOutsideWdtHome}}
     COPY --from=wdt_build --chown={{userid}}:{{groupid}} {{wdt_model_home}} {{wdt_model_home}}/
 {{/isWdtModelHomeOutsideWdtHome}}
-
+{{#has_copy_source_path}}
+    COPY --chown={{userid}}:{{groupid}} files/ {{mii_mount_path}}/
+{{/has_copy_source_path}}
 USER {{userid}}
 
 #ENTRYPOINT /bin/bash

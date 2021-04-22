@@ -4,6 +4,7 @@
 package com.oracle.weblogic.imagetool.cli.menu;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,14 +32,15 @@ import picocli.CommandLine.Command;
 import static com.oracle.weblogic.imagetool.cachestore.CacheStoreFactory.cache;
 
 @Command(
-    name = "create_mii_image",
+    name = "build",
     description = "Build Operator MII model image",
     requiredOptionMarker = '*',
     abbreviateSynopsis = true
 )
-public class CreateMIIOperatorImage extends CommonOptions implements Callable<CommandResponse> {
+public class CreateMIIOperatorImage extends CommonOptionsBase implements Callable<CommandResponse> {
 
     private static final LoggingFacade logger = LoggingFactory.getLogger(CreateMIIOperatorImage.class);
+    private static final String FILESFOLDER = "files";
 
     @Override
     public CommandResponse call() throws Exception {
@@ -63,7 +65,27 @@ public class CreateMIIOperatorImage extends CommonOptions implements Callable<Co
             } else {
                 dockerfileOptions.setPackageInstaller(packageManager);
             }
+
+            if (sourceFiles != null) {
+                dockerfileOptions.setHasCopySourcePath();
+                Files.createDirectory(Paths.get(getTempDirectory(), FILESFOLDER));
+                for (Path sourceFile : sourceFiles) {
+                    if (!Files.isReadable(sourceFile)) {
+                        throw new FileNotFoundException(Utils.getMessage("IMG-0030", sourceFile));
+                    }
+                    Path targetFile = Paths.get(getTempDirectory(), FILESFOLDER, sourceFile.getFileName().toString());
+                    logger.info("IMG-0043", sourceFile);
+                    if (Files.isDirectory(sourceFile)) {
+                        Utils.copyLocalDirectory(sourceFile, targetFile, false);
+                    } else {
+                        Utils.copyLocalFile(sourceFile, targetFile, false);
+                    }
+                }
+            }
+
+
             // Create Dockerfile
+
             String dockerfile = Utils.writeDockerfile(tmpDir + File.separator + "Dockerfile",
                 "CreateMIIOperator_Image.mustache", dockerfileOptions, dryRun);
 
@@ -100,9 +122,9 @@ public class CreateMIIOperatorImage extends CommonOptions implements Callable<Co
         logger.entering(tmpDir);
 
         dockerfileOptions.setWdtEnabled()
-            .setMiiResourceRoot("/" + miiResourceRoot)
-            .setWdtHome("/" + miiResourceRoot)
-            .setWdtModelHome("/" + miiResourceRoot + File.separator + "models");
+            .setMiiMountPath("/" + mountPath)
+            .setWdtHome("/" + mountPath)
+            .setWdtModelHome("/" + mountPath + File.separator + "models");
 
         if (wdtModelPath != null) {
             List<String> modelList = addWdtFilesAsList(wdtModelPath, "model", tmpDir);
@@ -178,11 +200,6 @@ public class CreateMIIOperatorImage extends CommonOptions implements Callable<Co
         return fileList;
     }
 
-    @Override
-    String getInstallerVersion() {
-        return null;
-    }
-
     @CommandLine.Option(
         names = {"--fromImage"},
         description = "Docker image to use as base image."
@@ -215,11 +232,26 @@ public class CreateMIIOperatorImage extends CommonOptions implements Callable<Co
     private String wdtVersion;
 
     @CommandLine.Option(
-        names = {"--miiResourceRoot"},
+        names = {"--mountPath"},
         description = "The root directory where the WDT binaries and models will be create. WDT binaries will be in "
             + " subdirectory weblogic-deploy and WDT models will be under models",
         defaultValue = "common"
     )
-    private String miiResourceRoot;
+    private String mountPath;
+
+    @CommandLine.Option(
+        names = {"--copyFilesOnly"},
+        description = "Copy files only",
+        defaultValue = "true"
+    )
+    private String copyFilesOnly;
+
+    @CommandLine.Option(
+        names = {"--sourceFiles"},
+        split = ",",
+        description = "Comma separated path or files"
+    )
+    private List<Path> sourceFiles;
+
 
 }

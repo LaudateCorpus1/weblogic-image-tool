@@ -39,17 +39,17 @@ public class CommonOptionsTest {
         CreateImage createImage = new CreateImage();
 
         // accessing private fields normally set by the command line
-        Field optionsField = CommonOptions.class.getDeclaredField("dockerfileOptions");
+        Field optionsField = CommonOptionsBase.class.getDeclaredField("dockerfileOptions");
         optionsField.setAccessible(true);
         DockerfileOptions dockerfile = new DockerfileOptions("testbuildid");
         optionsField.set(createImage, dockerfile);
 
-        Field userAndGroupField = CommonOptions.class.getDeclaredField("osUserAndGroup");
+        Field userAndGroupField = CommonOptionsBase.class.getDeclaredField("osUserAndGroup");
         userAndGroupField.setAccessible(true);
         String[] userAndGroup = {"derek", "data"};
         userAndGroupField.set(createImage, userAndGroup);
 
-        Method chownMethod = CommonOptions.class.getDeclaredMethod("handleChown");
+        Method chownMethod = CommonOptionsBase.class.getDeclaredMethod("handleChown");
         chownMethod.setAccessible(true);
         chownMethod.invoke(createImage);
 
@@ -67,17 +67,17 @@ public class CommonOptionsTest {
         createImage.setTempDirectory(buildDir.getAbsolutePath());
 
         // accessing private fields normally set by the command line
-        Field optionsField = CommonOptions.class.getDeclaredField("dockerfileOptions");
+        Field optionsField = CommonOptionsBase.class.getDeclaredField("dockerfileOptions");
         optionsField.setAccessible(true);
         DockerfileOptions dockerfile = new DockerfileOptions("testbuildid");
         optionsField.set(createImage, dockerfile);
 
-        Field commandsField = CommonOptions.class.getDeclaredField("additionalBuildCommandsPath");
+        Field commandsField = CommonOptionsBase.class.getDeclaredField("additionalBuildCommandsPath");
         commandsField.setAccessible(true);
         Path additionalBuildCommandsFile = Paths.get("./src/test/resources/additionalBuildCommands/two-sections.txt");
         commandsField.set(createImage, additionalBuildCommandsFile);
 
-        Field buildFiles = CommonOptions.class.getDeclaredField("additionalBuildFiles");
+        Field buildFiles = CommonOptionsBase.class.getDeclaredField("additionalBuildFiles");
         buildFiles.setAccessible(true);
         List<Path> buildFilesList = new ArrayList<>();
         buildFilesList.add(Paths.get("./src/test/resources/buildFilesDir"));
@@ -88,7 +88,7 @@ public class CommonOptionsTest {
         Level oldLevel = logger.getLevel();
         logger.setLevel(Level.WARNING);
         try {
-            Method chownMethod = CommonOptions.class.getDeclaredMethod("handleAdditionalBuildCommands");
+            Method chownMethod = CommonOptionsBase.class.getDeclaredMethod("handleAdditionalBuildCommands");
             chownMethod.setAccessible(true);
             chownMethod.invoke(createImage);
         } finally {

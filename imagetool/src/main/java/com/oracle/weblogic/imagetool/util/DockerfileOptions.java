@@ -71,7 +71,8 @@ public class DockerfileOptions {
     private String wdtInstallerFilename;
     private boolean wdtUseEncryption;
 
-    private String miiResourceRoot;
+    private String miiMountPath;
+    private boolean hasCopySourcePaths;
 
     // Additional Build Commands
     private Map<String,List<String>> additionalBuildCommands;
@@ -325,15 +326,23 @@ public class DockerfileOptions {
         return this;
     }
 
-    public String mii_resource_root() {
-        return miiResourceRoot;
+    public String mii_mount_path() {
+        return miiMountPath;
     }
 
-    public DockerfileOptions setMiiResourceRoot(String miiResourceRoot) {
-        this.miiResourceRoot = miiResourceRoot;
+    public DockerfileOptions setMiiMountPath(String miiMountPath) {
+        this.miiMountPath = miiMountPath;
         return this;
     }
 
+    public DockerfileOptions setHasCopySourcePath() {
+        this.hasCopySourcePaths = true;
+        return this;
+    }
+
+    public boolean has_copy_source_path() {
+        return this.hasCopySourcePaths;
+    }
 
     /**
      * Check to see if WDT model home is not under WDT home.
