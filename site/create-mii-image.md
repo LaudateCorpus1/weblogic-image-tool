@@ -3,7 +3,7 @@
 The `filesimage` command helps build a WebLogic Docker image from a given base OS image for deploying to WebLogic Kubernetes Operator Model In Image domain source type. The required option for the command is marked. There are a number of optional parameters for the create feature.
 
 ```
-Usage: imagetool filesimage [OPTIONS]
+Usage: imagetool build filesimage [OPTIONS]
 ```
 
 | Parameter | Definition | Default |
