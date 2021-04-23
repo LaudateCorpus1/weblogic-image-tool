@@ -8,6 +8,7 @@ import java.util.concurrent.Callable;
 
 import com.oracle.weblogic.imagetool.api.model.CommandResponse;
 import com.oracle.weblogic.imagetool.cli.cache.CacheCLI;
+import com.oracle.weblogic.imagetool.cli.menu.Build;
 import com.oracle.weblogic.imagetool.cli.menu.CreateImage;
 import com.oracle.weblogic.imagetool.cli.menu.CreateMIIOperatorImage;
 import com.oracle.weblogic.imagetool.cli.menu.RebaseImage;
@@ -26,6 +27,7 @@ import picocli.CommandLine.ParseResult;
         versionProvider = HelpVersionProvider.class,
         sortOptions = false,
         subcommands = {
+                Build.class,
                 CacheCLI.class,
                 CreateImage.class,
                 UpdateImage.class,
