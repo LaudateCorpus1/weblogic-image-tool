@@ -1,9 +1,9 @@
-# Create MII Image
+# Create Files Image
 
-The `create_mii_image` command helps build a WebLogic Docker image from a given base OS image for deploying to WebLogic Kubernetes Operator Model In Image domain source type. The required option for the command is marked. There are a number of optional parameters for the create feature.
+The `filesimage` command helps build a WebLogic Docker image from a given base OS image for deploying to WebLogic Kubernetes Operator Model In Image domain source type. The required option for the command is marked. There are a number of optional parameters for the create feature.
 
 ```
-Usage: imagetool create_mii_image [OPTIONS]
+Usage: imagetool filesimage [OPTIONS]
 ```
 
 | Parameter | Definition | Default |
@@ -22,7 +22,10 @@ Usage: imagetool create_mii_image [OPTIONS]
 | `--wdtModel` | Path to the WDT model file that defines the domain to create.  |   |
 | `--wdtVariables` | Path to the WDT variables file for use with the WDT model.  |   |
 | `--wdtVersion` | WDT tool version to use.  |   |
+| `--sourceFiles` | Comma separated list of path or files to copy to the mountPath.  |   |
+| `--mountPath` | Files destination root folder path.  |   |
 
+Note:  `--wdtModel` `--wdtVariables` `--wdtArchive` will be copied to a folder `models` under `--mountPath`. and WDT binaries will be unzipped to a folder `weblogic-deploy` under `--mountPath`.
 
 #### Use an argument file
 

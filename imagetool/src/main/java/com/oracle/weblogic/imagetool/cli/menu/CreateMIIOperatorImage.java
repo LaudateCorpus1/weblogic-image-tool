@@ -32,7 +32,7 @@ import picocli.CommandLine.Command;
 import static com.oracle.weblogic.imagetool.cachestore.CacheStoreFactory.cache;
 
 @Command(
-    name = "build",
+    name = "filesimage",
     description = "Build Operator MII model image",
     requiredOptionMarker = '*',
     abbreviateSynopsis = true
